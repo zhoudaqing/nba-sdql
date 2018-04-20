@@ -1,0 +1,4 @@
+http://sportsdatabase.com/nba/query?output=default&sdql=op:biggest+lead%3C7+and+op:WF+and+p:L&submit=++S+D+Q+L+!++
+http://sportsdatabase.com/nba/query?output=default&sdql=opo:assists%3E25+and+op:W+and+op:total%3E200+and+p:L+and+playoffs=0&submit=++S+D+Q+L+!++
+http://sportsdatabase.com/nba/query?output=default&sdql=A+and+opo%3AFTP%3C55+and+op%3AW+and+p%3AL+and+playoffs%3D0&submit=++S+D+Q+L+%21++
+http://sportsdatabase.com/nba/query?output=default&sdql=H&submit=++S+D+Q+L+%21++
