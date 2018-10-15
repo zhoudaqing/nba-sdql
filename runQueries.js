@@ -4,7 +4,7 @@ var sleep = require('sleep-promise');
 var argv = require('yargs')
     .usage('Usage: node $0 [options]')
     .option('date', { alias: 'd', describe: 'Date that query should look to find teams (Format: YYYYMMDD)'})
-    .option('file', { alias: 'f', describe: 'File that contains the original queries', default: 'best-queries-after-2015.txt'})
+    .option('file', { alias: 'f', describe: 'File that contains the original queries', default: 'queries-2018-selection.txt'})
     .option('delay', { alias: 's', describe: 'Delay between each REST api call in ms', default: 2500 })
     .option('debug', { describe: 'Use this to display extra information during the run', default: false })
     .option('showCollisions', { alias: 'c', describe: 'Will print picks where opponents also matched a query', default: true })
@@ -17,7 +17,7 @@ var teamsToBet = { "picks": [] };
 var myPromises = [];
 
 var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({    
+var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'charles.fun.svt',
@@ -36,7 +36,7 @@ for (var i = 0; i < originalUrls.length; i++) {
     var promise = new Promise(function (resolve, reject) {
         var options = {
             queryNumber: i,
-            theQuery: originalUrls[i],            
+            theQuery: originalUrls[i],
             url: buildRequestUrl(originalUrls[i], date),
             port: 80,
             method: 'GET'
@@ -58,13 +58,13 @@ for (var i = 0; i < originalUrls.length; i++) {
                     jsonResponse = jsonResponse.substr(jsonResponse.indexOf("{"), jsonResponse.length);
                     jsonResponse = jsonResponse.substr(0, jsonResponse.lastIndexOf("}") + 1);
                     jsonResponse = jsonResponse.replace(new RegExp("\'", 'g'), "\"");
-                    jsonResponse = JSON.parse(jsonResponse);                                
+                    jsonResponse = JSON.parse(jsonResponse);
                     // End conversion of response to JSON
 
-                    if (argv.debug) { 
+                    if (argv.debug) {
                         console.log("");
                         console.log("JSON Response: " + JSON.stringify(jsonResponse));
-                        console.log("API Request: " + options.url); 
+                        console.log("API Request: " + options.url);
                     }
 
                     // Look for the team and add it to the teams object
@@ -98,7 +98,7 @@ for (var i = 0; i < originalUrls.length; i++) {
                         if (!foundExistingPick) {
                             teamsToBet.picks.push(picksEntry);
                         }
-                            
+
                     }
                     // End counting the pick to the teamsToAdd
 
@@ -111,7 +111,7 @@ for (var i = 0; i < originalUrls.length; i++) {
         });
     });
     myPromises.push(promise);
-    
+
 } //end loop to create array of promises
 
 // After promises have been added to the array execute steps afterwards
@@ -184,22 +184,22 @@ function emailTeamsToBet(teamsToBet) {
                 for (var j = 0; j < teamsToBet.picks[i].queryURL.length; j++) {
                     body += "Matched query #" + teamsToBet.picks[i].matchedQuery[j];
                     body += " (<a href=" + teamsToBet.picks[i].queryURL[j] + ">" + teamsToBet.picks[i].queryURL[j] + "</a>)<br>";
-                }                
+                }
             }
             body += "<br>";
         }
     }
-    
-    // setup e-mail data 
+
+    // setup e-mail data
     var mailOptions = {
-        from: 'charlieplex', // sender address 
-        to: emailTo, // list of receivers 
-        subject: mySubject, // Subject line 
-        text: body, // plaintext body 
-        html: body // html body 
+        from: 'charlieplex', // sender address
+        to: emailTo, // list of receivers
+        subject: mySubject, // Subject line
+        text: body, // plaintext body
+        html: body // html body
     };
 
-    // send mail with defined transport object 
+    // send mail with defined transport object
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log("ERROR: There was an error sending the summary email");
@@ -226,8 +226,8 @@ function printTeamsToBet(teamsToBet) {
         var collision = false;
         for (var j = 0; j < teamsToBet.picks.length; j++) {
             if (teamsToBet.picks[i].team === teamsToBet.picks[j].opponent) {
-                collision = true;  
-                if (argv.debug || argv.showCollisions) { console.log("Collision detected with team: " + teamsToBet.picks[i].team); }             
+                collision = true;
+                if (argv.debug || argv.showCollisions) { console.log("Collision detected with team: " + teamsToBet.picks[i].team); }
             }
         }
         // If no collision print the pick
@@ -240,5 +240,5 @@ function printTeamsToBet(teamsToBet) {
             console.log("");
         }
     }
-    
+
 }

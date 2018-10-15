@@ -7,7 +7,7 @@ var argv = require('yargs')
     .option('month', { alias: 'm', describe: 'Check a specific month', default: null})
     .option('date', { alias: 'd', describe: 'Check a specific date (YYYYMMDD)', default: null})
     .option('custom', { alias: 'c', describe: 'Add custom string (%3D is "=", + is "space", i.e. "+and+season>2014")', default: null})
-    .option('file', { alias: 'f', describe: 'File that contains the original queries', default: 'best-queries-after-2015.txt'})
+    .option('file', { alias: 'f', describe: 'File that contains the original queries', default: 'queries-2018-selection.txt'})
     .option('delay', { describe: 'Delay between each REST api call in ms', default: 2500 })
     .option('debug', { describe: 'Use this to display extra information during the run', default: false })
     .help('h')
@@ -33,14 +33,14 @@ for (var i = 0; i < originalUrls.length; i++) {
     var promise = new Promise(function (resolve, reject) {
         var options = {
             queryNumber: i,
-            theQuery: originalUrls[i],            
+            theQuery: originalUrls[i],
             url: buildRequestUrl(originalUrls[i]),
             port: 80,
             method: 'GET'
         };
         sleep(i * argv.delay).then(function () {
             request(options, function (error, response, body) {
-                if (!error && response.statusCode == 200) {                    
+                if (!error && response.statusCode == 200) {
                     var jsonResponse = response.body;
                     var qNum = options.queryNumber + 1;
 
@@ -55,17 +55,17 @@ for (var i = 0; i < originalUrls.length; i++) {
                     jsonResponse = jsonResponse.substr(jsonResponse.indexOf("{"), jsonResponse.length);
                     jsonResponse = jsonResponse.substr(0, jsonResponse.lastIndexOf("}") + 1);
                     jsonResponse = jsonResponse.replace(new RegExp("\'", 'g'), "\"");
-                    jsonResponse = JSON.parse(jsonResponse);                                
+                    jsonResponse = JSON.parse(jsonResponse);
                     // End conversion of response to JSON
 
-                    if (argv.debug) { 
-                        console.log("JSON Response: " + JSON.stringify(jsonResponse)); 
+                    if (argv.debug) {
+                        console.log("JSON Response: " + JSON.stringify(jsonResponse));
                     }
 
                     // Look for the team and add it to the teams object
                     var atsWins = 0;
-                    var atsLosses = 0 
-                    var atsPushes = 0;                    
+                    var atsLosses = 0
+                    var atsPushes = 0;
                     var pointsForArray = jsonResponse.groups[0].columns[0];
                     var pointsAgainstArray = jsonResponse.groups[0].columns[1];
                     var linesArray = jsonResponse.groups[0].columns[2];
@@ -84,8 +84,8 @@ for (var i = 0; i < originalUrls.length; i++) {
                                 atsPushes++;
                                 overallPushes++;
                             }
-                        } 
-                        
+                        }
+
                     }
                     var winPercent = (atsWins / (atsWins + atsLosses))*100;
                     console.log(qNum + ". Win percent: " + Number(winPercent).toFixed(1) + "% (" + atsWins + "-" + atsLosses + "-" + atsPushes + ")");
@@ -100,7 +100,7 @@ for (var i = 0; i < originalUrls.length; i++) {
         });
     });
     myPromises.push(promise);
-    
+
 } //end loop to create array of promises
 
 // After promises have been added to the array execute steps afterwards
@@ -130,7 +130,7 @@ function buildRequestUrl(orignalUrl) {
     }
     returnUrl+="&output=json&api_key=" + apiKey;
 
-    if (argv.debug) { 
+    if (argv.debug) {
         console.log("Built query: " + returnUrl);
     }
     return returnUrl;
